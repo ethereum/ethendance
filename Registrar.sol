@@ -22,7 +22,7 @@ contract Registrar {
     AbstractENS ens;
     bytes32 rootNode;
     mapping (bytes32 => uint) registeredTime;
-    address proxy;
+    address public proxy;
  
     modifier onlyOwner {
         if (msg.sender != owner)
@@ -41,15 +41,15 @@ contract Registrar {
             throw;
         
         registeredTime[subnode] = now;
-        ens.setSubnodeOwner(rootNode, subnode, owner);
-        return;
+        return ens.setSubnodeOwner(rootNode, subnode, owner);
     }
     
-    function enableProxy() onlyOwner {
+    function enableProxy() onlyOwner returns (address proxy) {
         if (proxy != 0)
             throw;
             
         proxy = new RegistrarProxy(this);
+        return proxy;
     }
 
     function disableProxy() onlyOwner {
